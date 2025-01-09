@@ -64,22 +64,121 @@
             return `alert(${text});\n`;
         };
 
+        // Variable Set Block (Create or update a variable)
+        Blockly.Blocks['variables_set'] = {
+            init: function() {
+                this.appendValueInput('VALUE')
+                    .setCheck(null)
+                    .appendField('set')
+                    .appendField(new Blockly.FieldVariable('item'), 'VAR')
+                    .appendField('to');
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setColour(330);
+                this.setTooltip('Sets the value of a variable');
+                this.setHelpUrl('');
+            }
+        };
+
+        Blockly.JavaScript['variables_set'] = function(block) {
+            var variable = Blockly.JavaScript.nameDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+            var value = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+            return `${variable} = ${value};\n`;
+        };
+
+        // Variable Get Block (Get the value of a variable)
+        Blockly.Blocks['variables_get'] = {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField(new Blockly.FieldVariable('item'), 'VAR');
+                this.setOutput(true, null);
+                this.setColour(330);
+                this.setTooltip('Gets the value of a variable');
+                this.setHelpUrl('');
+            }
+        };
+
+        Blockly.JavaScript['variables_get'] = function(block) {
+            var variable = Blockly.JavaScript.nameDB_.getName(block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+            return [variable, Blockly.JavaScript.ORDER_ATOMIC];
+        };
+
+        // Simple Math Operation Blocks
+        Blockly.Blocks['math_addition'] = {
+            init: function() {
+                this.appendValueInput('A')
+                    .setCheck('Number')
+                    .appendField('add');
+                this.appendValueInput('B')
+                    .setCheck('Number')
+                    .appendField('to');
+                this.setOutput(true, 'Number');
+                this.setColour(230);
+                this.setTooltip('Adds two numbers');
+                this.setHelpUrl('');
+            }
+        };
+
+        Blockly.JavaScript['math_addition'] = function(block) {
+            var a = Blockly.JavaScript.valueToCode(block, 'A', Blockly.JavaScript.ORDER_NONE) || '0';
+            var b = Blockly.JavaScript.valueToCode(block, 'B', Blockly.JavaScript.ORDER_NONE) || '0';
+            return [`(${a} + ${b})`, Blockly.JavaScript.ORDER_ADDITION];
+        };
+
+        // Simple Text Block
+        Blockly.Blocks['text_concat'] = {
+            init: function() {
+                this.appendValueInput('TEXT1')
+                    .setCheck('String')
+                    .appendField('concatenate');
+                this.appendValueInput('TEXT2')
+                    .setCheck('String')
+                    .appendField('and');
+                this.setOutput(true, 'String');
+                this.setColour(160);
+                this.setTooltip('Concatenate two text values');
+                this.setHelpUrl('');
+            }
+        };
+
+        Blockly.JavaScript['text_concat'] = function(block) {
+            var text1 = Blockly.JavaScript.valueToCode(block, 'TEXT1', Blockly.JavaScript.ORDER_NONE) || "''";
+            var text2 = Blockly.JavaScript.valueToCode(block, 'TEXT2', Blockly.JavaScript.ORDER_NONE) || "''";
+            return [`(${text1} + ${text2})`, Blockly.JavaScript.ORDER_CONCAT];
+        };
+
+        // Loop Block (Repeat a set of actions)
+        Blockly.Blocks['controls_repeat'] = {
+            init: function() {
+                this.appendValueInput('TIMES')
+                    .setCheck('Number')
+                    .appendField('repeat');
+                this.appendStatementInput('DO')
+                    .setCheck(null)
+                    .appendField('do');
+                this.setColour(120);
+                this.setTooltip('Repeat the block a certain number of times');
+                this.setHelpUrl('');
+            }
+        };
+
+        Blockly.JavaScript['controls_repeat'] = function(block) {
+            var times = Blockly.JavaScript.valueToCode(block, 'TIMES', Blockly.JavaScript.ORDER_NONE) || '0';
+            var statements = Blockly.JavaScript.statementToCode(block, 'DO');
+            return `for (let i = 0; i < ${times}; i++) {\n${statements}}\n`;
+        };
+
         // Initialize Blockly workspace
         const workspace = Blockly.inject('blocklyDiv', {
             toolbox: `
                 <xml xmlns="https://developers.google.com/blockly/xml">
                     <block type="controls_if"></block>
-                    <block type="controls_repeat_ext"></block>
-                    <block type="logic_compare"></block>
-                    <block type="logic_boolean"></block>
-                    <block type="math_number"></block>
-                    <block type="math_arithmetic"></block>
-                    <block type="text"></block>
-                    <block type="text_print"></block>
-                    <!-- Alert Block -->
-                    <block type="alert"></block>
+                    <block type="controls_repeat"></block>
+                    <block type="math_addition"></block>
+                    <block type="text_concat"></block>
                     <block type="variables_set"></block>
                     <block type="variables_get"></block>
+                    <block type="alert"></block>
                 </xml>
             `,
             trashcan: true
