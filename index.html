@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockly JavaScript Builder</title>
+
+    <!-- Include Blockly from CDN -->
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+
+    <style>
+        #blocklyDiv {
+            height: 480px;
+            width: 600px;
+            border: solid 1px #ccc;
+        }
+        #outputCode {
+            background: #f4f4f4;
+            padding: 10px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Create JavaScript Code Using Blockly</h1>
+
+    <div id="blocklyDiv"></div>
+
+    <button id="generateCodeButton">Generate JavaScript Code</button>
+    <button id="runCodeButton">Run JavaScript Code</button>
+
+    <pre id="outputCode"></pre>
+
+    <script>
+        // Define the alert block
+        Blockly.Blocks['alert'] = {
+            init: function() {
+                this.appendValueInput('TEXT')
+                    .setCheck('String')
+                    .appendField('alert');
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setColour(160);
+            }
+        };
+
+        // JavaScript generator for the alert block
+        Blockly.JavaScript['alert'] = function(block) {
+            const text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_NONE) || '\'\'';
+            return `alert(${text});\n`;
+        };
+
+        // Initialize Blockly workspace
+        const workspace = Blockly.inject('blocklyDiv', {
+            toolbox: `
+                <xml xmlns="https://developers.google.com/blockly/xml">
+                    <block type="controls_if"></block>
+                    <block type="controls_repeat_ext"></block>
+                    <block type="logic_compare"></block>
+                    <block type="logic_boolean"></block>
+                    <block type="math_number"></block>
+                    <block type="math_arithmetic"></block>
+                    <block type="text"></block>
+                    <block type="text_print"></block>
+                    <!-- Alert Block -->
+                    <block type="alert"></block>
+                    <block type="variables_set"></block>
+                    <block type="variables_get"></block>
+                </xml>
+            `,
+            trashcan: true
+        });
+
+        // Function to generate JavaScript code from Blockly workspace
+        function generateCode() {
+            const code = Blockly.JavaScript.workspaceToCode(workspace);
+            document.getElementById('outputCode').textContent = code;
+        }
+
+        // Function to run the generated JavaScript code
+        function runCode() {
+            const code = Blockly.JavaScript.workspaceToCode(workspace);
+            try {
+                eval(code);
+            } catch (e) {
+                alert("Error: " + e.message);
+            }
+        }
+
+        // Event listeners for the buttons
+        document.getElementById('generateCodeButton').addEventListener('click', generateCode);
+        document.getElementById('runCodeButton').addEventListener('click', runCode);
+    </script>
+
+</body>
+</html>
