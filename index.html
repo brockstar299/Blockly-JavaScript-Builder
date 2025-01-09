@@ -64,7 +64,7 @@
             return `alert(${text});\n`;
         };
 
-        // Variable Set Block (Create or update a variable)
+        // Define variable blocks (set and get)
         Blockly.Blocks['variables_set'] = {
             init: function() {
                 this.appendValueInput('VALUE')
@@ -86,7 +86,6 @@
             return `${variable} = ${value};\n`;
         };
 
-        // Variable Get Block (Get the value of a variable)
         Blockly.Blocks['variables_get'] = {
             init: function() {
                 this.appendDummyInput()
@@ -147,7 +146,7 @@
             return [`(${text1} + ${text2})`, Blockly.JavaScript.ORDER_CONCAT];
         };
 
-        // Loop Block (Repeat a set of actions)
+        // Repeat Loop Block
         Blockly.Blocks['controls_repeat'] = {
             init: function() {
                 this.appendValueInput('TIMES')
@@ -168,12 +167,69 @@
             return `for (let i = 0; i < ${times}; i++) {\n${statements}}\n`;
         };
 
+        // Control Flow Blocks (if-else)
+        Blockly.Blocks['controls_if'] = {
+            init: function() {
+                this.appendValueInput('IF0')
+                    .setCheck('Boolean')
+                    .appendField('if');
+                this.appendStatementInput('DO0')
+                    .setCheck(null)
+                    .appendField('do');
+                this.setColour(210);
+                this.setTooltip('If condition is true, do the statements inside');
+                this.setHelpUrl('');
+            }
+        };
+
+        Blockly.JavaScript['controls_if'] = function(block) {
+            var value_if0 = Blockly.JavaScript.valueToCode(block, 'IF0', Blockly.JavaScript.ORDER_NONE) || 'false';
+            var statements_do0 = Blockly.JavaScript.statementToCode(block, 'DO0');
+            return `if (${value_if0}) {\n${statements_do0}}\n`;
+        };
+
+        // Comparison Block (for if statements)
+        Blockly.Blocks['logic_compare'] = {
+            init: function() {
+                this.appendValueInput('A')
+                    .setCheck('Number')
+                    .appendField('compare');
+                this.appendValueInput('B')
+                    .setCheck('Number')
+                    .appendField('to');
+                this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown([
+                        ['=', 'EQ'],
+                        ['<', 'LT'],
+                        ['>', 'GT']
+                    ]), 'OPERATOR');
+                this.setOutput(true, 'Boolean');
+                this.setColour(210);
+                this.setTooltip('Compares two values');
+                this.setHelpUrl('');
+            }
+        };
+
+        Blockly.JavaScript['logic_compare'] = function(block) {
+            var value_a = Blockly.JavaScript.valueToCode(block, 'A', Blockly.JavaScript.ORDER_NONE) || '0';
+            var value_b = Blockly.JavaScript.valueToCode(block, 'B', Blockly.JavaScript.ORDER_NONE) || '0';
+            var operator = block.getFieldValue('OPERATOR');
+            var operator_map = {
+                'EQ': '==',
+                'LT': '<',
+                'GT': '>'
+            };
+            var code = `${value_a} ${operator_map[operator]} ${value_b}`;
+            return [code, Blockly.JavaScript.ORDER_RELATIONAL];
+        };
+
         // Initialize Blockly workspace
         const workspace = Blockly.inject('blocklyDiv', {
             toolbox: `
                 <xml xmlns="https://developers.google.com/blockly/xml">
                     <block type="controls_if"></block>
                     <block type="controls_repeat"></block>
+                    <block type="logic_compare"></block>
                     <block type="math_addition"></block>
                     <block type="text_concat"></block>
                     <block type="variables_set"></block>
