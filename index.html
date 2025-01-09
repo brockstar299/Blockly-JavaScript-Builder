@@ -146,6 +146,42 @@
             return [`(${text1} + ${text2})`, Blockly.JavaScript.ORDER_CONCAT];
         };
 
+        // Number Block (creates a number)
+        Blockly.Blocks['math_number'] = {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField(new Blockly.FieldNumber(0), 'NUM');
+                this.setOutput(true, 'Number');
+                this.setColour(230);
+                this.setTooltip('A number');
+                this.setHelpUrl('');
+            }
+        };
+
+        Blockly.JavaScript['math_number'] = function(block) {
+            var number = block.getFieldValue('NUM');
+            return [number, Blockly.JavaScript.ORDER_ATOMIC];
+        };
+
+        // Text Block (creates a text string)
+        Blockly.Blocks['text'] = {
+            init: function() {
+                this.appendDummyInput()
+                    .appendField('"')
+                    .appendField(new Blockly.FieldTextInput('text'), 'TEXT')
+                    .appendField('"');
+                this.setOutput(true, 'String');
+                this.setColour(160);
+                this.setTooltip('A text string');
+                this.setHelpUrl('');
+            }
+        };
+
+        Blockly.JavaScript['text'] = function(block) {
+            var text = block.getFieldValue('TEXT');
+            return [`"${text}"`, Blockly.JavaScript.ORDER_ATOMIC];
+        };
+
         // Repeat Loop Block
         Blockly.Blocks['controls_repeat'] = {
             init: function() {
@@ -235,6 +271,8 @@
                     <block type="variables_set"></block>
                     <block type="variables_get"></block>
                     <block type="alert"></block>
+                    <block type="math_number"></block>
+                    <block type="text"></block>
                 </xml>
             `,
             trashcan: true
