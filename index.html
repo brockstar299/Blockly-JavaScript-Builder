@@ -47,7 +47,7 @@
 
     <script>
         // *** Block Definitions ***
-        
+
         // Variable Blocks
         Blockly.Blocks['variables_set'] = {
             init: function() {
@@ -223,71 +223,71 @@
             return [`${text}.length`, Blockly.JavaScript.ORDER_MEMBER];
         };
 
-        // Function Blocks
-        Blockly.Blocks['procedures_defnoreturn'] = {
-            init: function() {
-                this.appendDummyInput()
-                    .appendField('function')
-                    .appendField(new Blockly.FieldTextInput('myFunction'), 'NAME')
-                    .appendField('()');
-                this.appendStatementInput('DO')
-                    .setCheck(null);
-                this.setColour(290);
-            }
-        };
+        // *** Add new blocks for additional functions ***
 
-        Blockly.JavaScript['procedures_defnoreturn'] = function(block) {
-            var funcName = block.getFieldValue('NAME');
-            var statements = Blockly.JavaScript.statementToCode(block, 'DO');
-            return `function ${funcName}() {\n${statements}}\n`;
-        };
-
-        Blockly.Blocks['procedures_callnoreturn'] = {
-            init: function() {
-                this.appendDummyInput()
-                    .appendField('call')
-                    .appendField(new Blockly.FieldTextInput('myFunction'), 'NAME')
-                    .appendField('()');
-                this.setColour(290);
-            }
-        };
-
-        Blockly.JavaScript['procedures_callnoreturn'] = function(block) {
-            var funcName = block.getFieldValue('NAME');
-            return `${funcName}();\n`;
-        };
-
-        // List Block
-        Blockly.Blocks['lists_create_with'] = {
-            init: function() {
-                this.appendDummyInput()
-                    .appendField('list')
-                    .appendField(new Blockly.FieldTextInput('[]'), 'ITEMS');
-                this.setOutput(true, 'Array');
-                this.setColour(250);
-            }
-        };
-
-        Blockly.JavaScript['lists_create_with'] = function(block) {
-            var items = block.getFieldValue('ITEMS');
-            return `[${items}]`;
-        };
-
-        // *** Define the Alert Block ***
-        Blockly.Blocks['alert'] = {
+        // `prompt()` Block
+        Blockly.Blocks['prompt'] = {
             init: function() {
                 this.appendValueInput('TEXT')
                     .setCheck('String')
-                    .appendField('alert');
-                this.setPreviousStatement(true);
-                this.setNextStatement(true);
+                    .appendField('prompt');
+                this.setOutput(true, 'String');
                 this.setColour(160);
             }
         };
 
-        Blockly.JavaScript['alert'] = function(block) {
+        Blockly.JavaScript['prompt'] = function(block) {
             var text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "''";
-            return `alert(${text});\n`;
+            return [`prompt(${text})`, Blockly.JavaScript.ORDER_ATOMIC];
+        };
+
+        // `console.log()` Block
+        Blockly.Blocks['console_log'] = {
+            init: function() {
+                this.appendValueInput('TEXT')
+                    .setCheck('String')
+                    .appendField('console.log');
+                this.setPreviousStatement(true);
+                this.setNextStatement(true);
+                this.setColour(230);
+            }
+        };
+
+        Blockly.JavaScript['console_log'] = function(block) {
+            var text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "''";
+            return `console.log(${text});\n`;
+        };
+
+        // `parseInt()` Block
+        Blockly.Blocks['parse_int'] = {
+            init: function() {
+                this.appendValueInput('TEXT')
+                    .setCheck('String')
+                    .appendField('parseInt');
+                this.setOutput(true, 'Number');
+                this.setColour(230);
+            }
+        };
+
+        Blockly.JavaScript['parse_int'] = function(block) {
+            var text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "''";
+            return [`parseInt(${text})`, Blockly.JavaScript.ORDER_FUNCTION_CALL];
+        };
+
+        // `parseFloat()` Block
+        Blockly.Blocks['parse_float'] = {
+            init: function() {
+                this.appendValueInput('TEXT')
+                    .setCheck('String')
+                    .appendField('parseFloat');
+                this.setOutput(true, 'Number');
+                this.setColour(230);
+            }
+        };
+
+        Blockly.JavaScript['parse_float'] = function(block) {
+            var text = Blockly.JavaScript.valueToCode(block, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "''";
+            return [`parseFloat(${text})`, Blockly.JavaScript.ORDER_FUNCTION_CALL];
         };
 
         // *** Blockly Workspace Initialization ***
@@ -320,8 +320,11 @@
                     <!-- Lists -->
                     <block type="lists_create_with"></block>
 
-                    <!-- Events and other blocks -->
-                    <block type="alert"></block>
+                    <!-- Built-in Functions -->
+                    <block type="prompt"></block>
+                    <block type="console_log"></block>
+                    <block type="parse_int"></block>
+                    <block type="parse_float"></block>
                 </xml>
             `,
             trashcan: true
